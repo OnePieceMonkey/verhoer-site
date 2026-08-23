@@ -2,3 +2,4 @@
 .vercel
 assets/screens/raw/
 docs/r-*.png
+.env*
