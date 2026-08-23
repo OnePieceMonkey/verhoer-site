@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Das Verhör — Ein Fall pro Tag. Ein Täter.</title>
+<meta name="description" content="Das tägliche Kriminalrätsel für iPhone. Drei Verdächtige, vierzehn Fragen, ein Täter. Alles auf dem Gerät — kein Konto, keine Cloud, kein Tracking.">
+<meta property="og:title" content="Das Verhör">
+<meta property="og:description" content="Ein Fall pro Tag. Drei Verdächtige. Vierzehn Fragen. Ein Täter.">
+<meta property="og:image" content="https://verhoer.werle.app/assets/og.png">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="de_DE">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" sizes="64x64" href="/assets/art/favicon-64.png">
+<link rel="apple-touch-icon" href="/assets/art/apple-touch-icon.png">
+<link rel="preload" href="/assets/fonts/Redaction-Bold.otf" as="font" type="font/otf" crossorigin>
+<link rel="preload" href="/assets/fonts/Redaction70-Bold.otf" as="font" type="font/otf" crossorigin>
+<link rel="preload" href="/assets/fonts/Literata-Regular.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="/css/site.css">
+<meta name="theme-color" content="#F2EDE3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14110D" media="(prefers-color-scheme: dark)">
+<script>document.documentElement.classList.add("js")</script>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="top" id="top">
+  <a class="mark" href="#">DAS VERHÖR</a>
+  <a class="chip" href="#preis">Bald im App&nbsp;Store</a>
+</header>
+
+<div id="page">
+  <svg id="thread-layer" aria-hidden="true"><path id="thread-path" d=""></path></svg>
+
+  <!-- ================= HELD ================= -->
+  <section class="hero" id="held">
+    <div class="streak" aria-hidden="true"></div>
+    <p class="eyebrow">Akte · Täglich · iPhone</p>
+    <h1 class="wordmark" id="wordmark" aria-label="Das Verhör">DAS&nbsp;VERHÖR</h1>
+    <p class="claim">Ein Fall pro Tag. Drei Verdächtige. Vierzehn Fragen. <strong>Ein Täter.</strong></p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#preis">Bald im App Store</a>
+      <a class="btn btn-secondary" href="#faelle">Die Fälle ansehen</a>
+    </div>
+    <p class="hero-note">iOS 26 · iPhone · Deutsch</p>
+
+    <figure class="hero-cards" id="hero-cards" aria-hidden="true">
+      <svg class="hero-thread" id="hero-thread"><path id="hero-thread-path" d=""></path></svg>
+      <div class="pcard pcard-l" id="pcard-l">
+        <span class="pin" id="hero-pin-l"></span>
+        <img src="/assets/art/scene_412.webp" alt="" width="840" height="1120" loading="eager">
+        <figcaption>Tatort · Galerie Verhoeven</figcaption>
+      </div>
+      <div class="pcard pcard-r" id="pcard-r">
+        <span class="pin" id="hero-pin-r"></span>
+        <img src="/assets/art/portrait_osei.webp" alt="" width="600" height="754" loading="eager">
+        <figcaption>Verdächtige · Die Buchhalterin</figcaption>
+      </div>
+    </figure>
+    <p class="scroll-hint">Ermitteln</p>
+  </section>
+
+  <!-- ================= SO SPIELT ES SICH ================= -->
+  <section class="section" id="spiel">
+    <div class="shell">
+      <p class="eyebrow rv">So spielt es sich</p>
+      <h2 class="head rv">Acht Minuten,<br>die sich lohnen müssen.</h2>
+      <p class="lede rv">Kein Timer. Keine Energie. Nur ein Budget: vierzehn Fragen.
+      Was du damit herausholst, ist deine Sache.</p>
+
+      <div class="play-grid" style="margin-top: clamp(40px, 8vh, 90px);">
+        <div class="steps" id="steps">
+          <div class="step" data-screen="0">
+            <p class="no">Schritt 1 — Das Briefing</p>
+            <h3>Der Fall liegt auf dem Tisch.</h3>
+            <p>Ein Tatort, eine Nacht, drei Menschen mit Zugang. Die Fakten der
+            Ermittler stehen an der Tafel. Der Rest steht in den Aussagen — und
+            die bekommst du nur im Verhör.</p>
+          </div>
+          <div class="step" data-screen="1">
+            <p class="no">Schritt 2 — Das Verhör</p>
+            <h3>Vierzehn Fragen. Mehr nicht.</h3>
+            <p>Jeder Verdächtige antwortet — höflich, ausweichend oder gereizt.
+            Wer mauert, kostet Druck. Eine Frage, die nichts auflöst, kostet
+            nichts. Das ist fair, und das bleibt so.</p>
+          </div>
+          <div class="step" data-screen="2">
+            <p class="no">Schritt 3 — Die Tafel</p>
+            <h3>Der rote Faden.</h3>
+            <p>Widersprüche zwischen Aussagen werden gepinnt und mit dem Faden
+            verbunden. Die Tafel wird zum Netz um die Verdächtigen — und
+            irgendwann hängt einer drin.</p>
+          </div>
+          <div class="step" data-screen="3">
+            <p class="no">Schritt 4 — Die Anklage</p>
+            <h3>Ein Name. Ein Widerspruch.</h3>
+            <p>Du benennst den Täter und den Beweis, der ihn überführt. Kein
+            Raten: Jeder Fall ist ohne Weltwissen lösbar, mit genau einer
+            stimmigen Lösung. Geprüft, bevor er erscheint.</p>
+          </div>
+        </div>
+        <div class="phone-wrap rv">
+          <div class="phone">
+            <div class="phone-screen" id="phone-screen">
+              <img src="/assets/screens/02-briefing.webp" alt="Briefing-Ansicht der App: der Fall wird vorgestellt" class="active">
+              <img src="/assets/screens/03-verhoer.webp" alt="Verhör-Ansicht: das Porträt eines Verdächtigen füllt den Bildschirm">
+              <img src="/assets/screens/05-tafel.webp" alt="Die Tafel: Verdächtige, Fakten und gepinnte Widersprüche mit rotem Faden">
+              <img src="/assets/screens/06-anklage.webp" alt="Anklage-Ansicht: Täter und Widerspruch auswählen">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DIE FÄLLE ================= -->
+  <section class="section gallery-outer" id="faelle">
+    <div class="shell">
+      <p class="eyebrow rv">Die Fälle</p>
+      <h2 class="head rv">Jede Nacht ein anderer Tatort.</h2>
+      <p class="lede rv">Galerie, Sternwarte, Bergwerk, Nachtzug. Jeden Tag um
+      7&nbsp;Uhr erscheint weltweit derselbe neue Fall — von Hand geprüft,
+      maschinell bewiesen: genau eine Lösung.</p>
+    </div>
+    <div class="gallery" id="gallery">
+      <article class="case-card"><div class="img-wrap"><img src="/assets/art/scene_412.webp" alt="Tuschezeichnung: Galerie bei Nacht" loading="lazy" width="840" height="1120"></div><p class="cno">Akte 412 · Galerie</p><h3>Galerie Verhoeven, Antwerpen</h3></article>
+      <article class="case-card"><div class="img-wrap"><img src="/assets/art/scene_416.webp" alt="Tuschezeichnung: Sternwarte bei Nacht" loading="lazy" width="840" height="1120"></div><p class="cno">Akte 416 · Sternwarte</p><h3>Toter Betriebsleiter in der Sternwarte</h3></article>
+      <article class="case-card"><div class="img-wrap"><img src="/assets/art/scene_419.webp" alt="Tuschezeichnung: Schachturnier" loading="lazy" width="840" height="1120"></div><p class="cno">Akte 419 · Turnier</p><h3>Tod im ersten Stock</h3></article>
+      <article class="case-card"><div class="img-wrap"><img src="/assets/art/scene_422.webp" alt="Tuschezeichnung: Besucherbergwerk" loading="lazy" width="840" height="1120"></div><p class="cno">Akte 422 · Bergwerk</p><h3>Sturz auf der dritten Sohle</h3></article>
+      <article class="case-card"><div class="img-wrap"><img src="/assets/art/scene_424.webp" alt="Tuschezeichnung: Tierpark bei Nacht" loading="lazy" width="840" height="1120"></div><p class="cno">Akte 424 · Tierpark</p><h3>Nachtdienst im Tierpark Waldhege</h3></article>
+      <article class="case-card"><div class="img-wrap"><img src="/assets/art/scene_425.webp" alt="Tuschezeichnung: Spielbank" loading="lazy" width="840" height="1120"></div><p class="cno">Akte 425 · Spielbank</p><h3>Ein Toter im Zählraum</h3></article>
+      <article class="case-card"><div class="img-wrap"><img src="/assets/art/scene_428.webp" alt="Tuschezeichnung: Nachtzug" loading="lazy" width="840" height="1120"></div><p class="cno">Akte 428 · Nachtzug</p><h3>Nachtzug 471, Abteil 11</h3></article>
+      <article class="case-card"><div class="img-wrap"><img src="/assets/art/scene_433.webp" alt="Tuschezeichnung: Grandhotel bei Nacht" loading="lazy" width="840" height="1120"></div><p class="cno">Akte 433 · Grandhotel</p><h3>Nachtdienst im Parkhotel Fremersberg</h3></article>
+    </div>
+    <p class="gallery-hint">Ziehen zum Blättern</p>
+  </section>
+
+  <!-- ================= WAS DRIN STECKT ================= -->
+  <section class="section" id="drin">
+    <div class="shell">
+      <p class="eyebrow rv">Was drin steckt</p>
+      <h2 class="head rv">Ein Rätsel, kein Automat.</h2>
+      <div class="tabs-grid">
+        <article class="tab-card rv" data-tab="Rhythmus">
+          <h3>Täglich ein Fall, weltweit derselbe.</h3>
+          <p>Um 7&nbsp;Uhr liegt die neue Akte auf dem Tisch — für alle die
+          gleiche. Verglichen wird also nicht, wer mehr spielt, sondern wer
+          besser fragt.</p>
+        </article>
+        <article class="tab-card rv" data-tab="Gerät">
+          <h3>Alles bleibt auf dem iPhone.</h3>
+          <p>Kein Konto, kein Server, keine Cloud. Auch die Sprache der
+          Verdächtigen entsteht auf dem Gerät. Was du im Verhör fragst, liest
+          niemand mit.</p>
+        </article>
+        <article class="tab-card rv" data-tab="Archiv">
+          <h3>Archiv, Serie, Statistik.</h3>
+          <p>Gelöste Fälle wandern ins Archiv. Deine Serie zählt die Tage,
+          die Statistik deinen Fragenschnitt. Ein verpasster Tag bleibt
+          verpasst — ehrlich ist ehrlich.</p>
+        </article>
+        <article class="tab-card rv" data-tab="Rangliste">
+          <h3>Game-Center-Ranglisten.</h3>
+          <p>Tageswertung, laufende Serie, beste Serie und der
+          Fragen-Durchschnitt über 30 Tage. Freiwillig, über Apple —
+          die App selbst kennt dich nicht.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= COUNTDOWN ================= -->
+  <section class="section countdown-sec" id="countdown-sec">
+    <div class="shell narrow">
+      <p class="eyebrow rv" style="justify-content:center">Der nächste Fall</p>
+      <p class="countdown rv" id="countdown" aria-live="off">–&#8203;–:–&#8203;–:–&#8203;–</p>
+      <p class="countdown-sub rv">Jeden Morgen um 7 Uhr wird eine neue Akte angelegt.</p>
+    </div>
+  </section>
+
+  <!-- ================= PREIS ================= -->
+  <section class="section" id="preis">
+    <div class="shell">
+      <p class="eyebrow rv">Der Preis</p>
+      <h2 class="head rv">Der Fall des Tages<br>ist immer gratis.</h2>
+      <p class="lede rv">Vollständig. Lösbar. Ohne Abstriche. Der Detective
+      Pass öffnet nur das Archiv — er schaltet keine Hinweise, keine
+      Widersprüche und keine Abkürzungen frei.</p>
+
+      <div class="price-grid">
+        <article class="price-card rv">
+          <p class="eyebrow">Der Tagesfall</p>
+          <p class="price-big">0&nbsp;€</p>
+          <p class="price-sub">Für immer</p>
+          <ul>
+            <li>Jeden Tag der komplette neue Fall</li>
+            <li>Alle Widersprüche erreichbar, ohne Kauf</li>
+            <li>Serie, Statistik und Ranglisten inklusive</li>
+          </ul>
+        </article>
+        <article class="price-card rv">
+          <span class="stamp">Gründer-Preis</span>
+          <p class="eyebrow">Detective Pass</p>
+          <p class="price-big">Das ganze Archiv.</p>
+          <p class="price-sub">Alle vergangenen Fälle, jederzeit</p>
+          <div class="price-rows">
+            <div class="price-row"><span class="plan">Monatlich</span><span class="amount" id="price-monthly">4,99&nbsp;€</span></div>
+            <div class="price-row best"><span class="plan">Jährlich</span><span class="amount" id="price-yearly">19,99&nbsp;€</span></div>
+          </div>
+          <p class="price-anchor" id="price-anchor">Jährlich entspricht 1,67&nbsp;€ im Monat.</p>
+        </article>
+      </div>
+      <p class="price-note">Abo über den App&nbsp;Store, jederzeit kündbar unter
+      Apple-ID&nbsp;→&nbsp;Abonnements. Preise können sich bis zum Erscheinen ändern.</p>
+    </div>
+  </section>
+
+  <!-- ================= DATENSCHUTZ ================= -->
+  <section class="section privacy-sec" id="privatsphaere">
+    <div class="shell narrow">
+      <p class="eyebrow rv" style="justify-content:center">Privatsphäre</p>
+      <p class="privacy-line rv">Deine Verhöre verlassen<br>dein iPhone <em>nie</em>.</p>
+      <p class="small rv">Das ist kein Versprechen, das ist die Architektur:
+      kein Backend, keine Cloud-Anfrage, kein Tracking, keine Werbung,
+      kein Konto. Die App kann deine Daten nicht verlieren, weil sie sie
+      nie bekommt.</p>
+      <p class="rv"><a class="link-quiet" href="/privacy">Die ganze Datenschutzerklärung</a></p>
+    </div>
+  </section>
+</div>
+
+<!-- ================= FUSSZEILE ================= -->
+<footer>
+  <div class="foot-grid">
+    <div>
+      <p class="mark">DAS VERHÖR</p>
+      <p class="col" style="margin-top:8px">Ein Spiel von Werle&nbsp;Technologies.</p>
+    </div>
+    <div class="col">
+      <p><strong>Support</strong></p>
+      <p><a href="mailto:verhoer@werle.app">verhoer@werle.app</a></p>
+      <p>Käufe wiederherstellen: in der App unter<br>Über&nbsp;→&nbsp;Konto — kein Konto nötig.</p>
+    </div>
+    <div class="col">
+      <p><strong>App</strong></p>
+      <p>iPhone · iOS 26 · Deutsch · 12+</p>
+      <p>Bald im App&nbsp;Store.</p>
+    </div>
+  </div>
+  <div class="foot-legal">
+    <span>© 2026 Werle Technologies</span>
+    <a href="/privacy">Datenschutz</a>
+    <a href="/impressum">Impressum</a>
+    <a href="https://werle.app">werle.app</a>
+  </div>
+</footer>
+
+<script src="/js/vendor/gsap.min.js" defer></script>
+<script src="/js/vendor/ScrollTrigger.min.js" defer></script>
+<script src="/js/site.js" defer></script>
+</body>
+</html>
