@@ -8,19 +8,19 @@ Vanilla JS + GSAP (vendored). Gehostet auf Vercel. Spezifikation: `docs/SPEC.md`
 Eine Stelle: `js/site.js`, Konstante `PRICE` ganz oben. Die HTML-Fallbacks in
 `index.html` (Suche nach `price-monthly`) passend nachziehen.
 
-## App-Store-Link scharf schalten
+## App-Store-Link
 
-Nach dem Release in `index.html` alle `Bald im App Store`-Buttons/Chips auf die
-echte App-Store-URL setzen (`https://apps.apple.com/de/app/idXXXXXXXXX`) und den
-Text auf „Laden im App Store" ändern.
+**Erledigt.** Alle Store-Verweise in `index.html` zeigen auf
+`https://apps.apple.com/de/app/id6797754222` (Kopfzeile, Held, Fusszeile).
+Ändert sich die Apple-ID, sind es genau diese drei Stellen.
 
-## Domain verbinden (nach Launch)
+## Domain
 
-1. Vercel: Projekt → Domains → `verhoer.werle.app` hinzufügen.
-2. Cloudflare-Zone `werle.app`: CNAME `verhoer` auf das Vercel-Ziel stellen
-   (aktuell zeigt der Plan in `Games/alibi/DOMAIN-SETUP.md` noch auf GitHub Pages).
-3. In der App `PassStoreView.privacyPolicyURL` auf
-   `https://verhoer.werle.app/privacy.html` setzen (Redirect auf `/privacy` ist ok).
+Live unter `verhoer.werle.app` (Vercel). Die Hauptdomain `werle.app`
+verlinkt die Seite über die Produktkarte „Das Verhör" (Repo
+`OnePieceMonkey/werle-app`), die Fusszeile hier verlinkt zurück.
+In der App zeigt `LegalLinks.privacyPolicyURL` auf
+`https://verhoer.werle.app/privacy`.
 
 ## Assets
 
