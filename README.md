@@ -14,27 +14,18 @@ Eine Stelle: `js/site.js`, Konstante `PRICE` ganz oben. Die HTML-Fallbacks in
 `https://apps.apple.com/de/app/id6797754222` (Kopfzeile, Held, Fusszeile).
 Ändert sich die Apple-ID, sind es genau diese drei Stellen.
 
-## Domain — noch offen
+## Domain
 
-Die Seite läuft unter `verhoer-site.vercel.app`. **`verhoer.werle.app` ist
-noch nicht verbunden:** der CNAME `verhoer` zeigt weiterhin auf
-`onepiecemonkey.github.io` (GitHub Pages), Stand 30.08.2026 per DNS-Abfrage
-bestätigt.
+Live unter **`verhoer.werle.app`** (seit 30.08.2026). Der Cloudflare-CNAME
+`verhoer` zeigt auf das Vercel-Ziel dieses Projekts, **DNS only** — proxied
+(orange Wolke) verhindert, dass Vercel das Zertifikat ausstellen kann.
 
-Zwei Handgriffe, beide ausserhalb des Codes:
+Die Deployment-Adresse `verhoer-site.vercel.app` bleibt daneben erreichbar;
+ältere App-Builds, die noch darauf zeigen, laufen also nicht ins Leere.
 
-1. **Vercel** → Projekt `verhoer-site` → Settings → Domains →
-   `verhoer.werle.app` hinzufügen. Vercel nennt dann das CNAME-Ziel
-   (`cname.vercel-dns.com`).
-2. **Cloudflare** → Zone `werle.app` → DNS → Record `verhoer` von
-   `onepiecemonkey.github.io` auf dieses Ziel ändern. Wichtig: **DNS only**
-   (graue Wolke, nicht proxied) — sonst kann Vercel das Zertifikat nicht
-   ausstellen.
-
-Danach prüfen, dass `https://verhoer.werle.app/privacy` wirklich antwortet,
-und erst dann in der App `LegalLinks.privacyPolicyURL` umstellen. Die
-`.vercel.app`-Adresse bleibt dauerhaft erreichbar, ältere Builds laufen also
-nicht ins Leere.
+In der App zeigt `LegalLinks.privacyPolicyURL` auf
+`https://verhoer.werle.app/privacy` — ohne `.html`, das löst `cleanUrls`
+in der `vercel.json` auf.
 
 Die Hauptdomain `werle.app` verlinkt die Seite über die Produktkarte
 „Das Verhör" (Repo `OnePieceMonkey/werle-app`); die Fusszeile hier
