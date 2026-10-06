@@ -104,7 +104,9 @@ const PRICE = {
 
   heroTl.from(".hero .eyebrow", { opacity: 0, y: -14, duration: 0.5 }, 0);
   heroTl.from(".hero .claim", { opacity: 0, y: 18, duration: 0.6 }, "-=0.2");
-  heroTl.from(".hero-cta .btn", { opacity: 0, y: 18, duration: 0.5, stagger: 0.12 }, "-=0.3");
+  // Opacity only: the App Store badge must not move (Apple rule), and the former y-tween left
+  // .btn at translateY(18px) in Chrome, which misaligned it next to the badge.
+  heroTl.from(".hero-cta .btn", { opacity: 0, duration: 0.5 }, "-=0.3");
   heroTl.from(".hero-note", { opacity: 0, duration: 0.6 }, "-=0.2");
 
   // Zwei Karten fallen ein, Nadeln setzen sich, der Faden spannt sich

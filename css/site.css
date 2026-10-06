@@ -207,7 +207,7 @@ h2.head {
 }
 .hero .claim strong { color: var(--ink); font-style: normal; font-weight: 600; }
 
-.hero-cta { margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.hero-cta { margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; align-items: center; }
 
 .btn {
   font-family: var(--mono); font-size: 13px; letter-spacing: 2px;
@@ -229,6 +229,10 @@ h2.head {
   transition: left .6s ease;
 }
 .btn-primary:hover::after { left: 130%; }
+
+/* Official Apple badge: unmodified artwork, no hover/motion, clear space >= 1/4 height */
+.store-badge { display: inline-flex; align-items: center; padding: 0; margin: 0; line-height: 0; }
+.store-badge img { display: block; height: 48px; width: auto; }
 
 .hero-note { margin-top: 26px; font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px; color: var(--faint); text-transform: uppercase; }
 
@@ -557,6 +561,11 @@ footer {
   font-family: var(--mono); font-size: 11px; letter-spacing: 1.4px;
   text-transform: uppercase; color: var(--faint);
   display: flex; flex-wrap: wrap; gap: 8px 22px;
+}
+
+.foot-credit {
+  max-width: 1080px; margin: 14px auto 0;
+  font-size: 11.5px; line-height: 1.5; color: var(--faint);
 }
 
 /* --- Rechtsseiten (privacy/impressum) -------------------------- */
