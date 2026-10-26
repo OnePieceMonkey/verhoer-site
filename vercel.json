@@ -3,9 +3,9 @@
   "trailingSlash": false,
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "verhoer-site.vercel.app" }],
-      "destination": "https://verhoer.werle.app/:path*",
+      "destination": "https://verhoer.werle.app/$1",
       "permanent": true
     }
   ],
