@@ -1,5 +1,7 @@
-/* Das Verhör — Seitenlogik.
-   Preise: EINE Stelle, hier. HTML-Fallback in index.html passend halten. */
+/* Das Verhör — Seitenlogik (Startseite).
+   Preise: EINE Stelle, hier. HTML-Fallback in index.html passend halten.
+   Bewegung: anime.js 4.5 (js/vendor/anime.umd.min.js). Ohne Skript oder mit
+   "Bewegung reduzieren" steht die Seite vollständig im Ruhezustand. */
 
 const PRICE = {
   monthly: "4,99 €",
@@ -10,288 +12,242 @@ const PRICE = {
 (function () {
   "use strict";
 
-  document.documentElement.classList.add("js");
+  const A = window.anime;
+  const $ = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const motion = !!A && !reduced;
+  // One broken effect must never take the rest of the page down with it.
+  const safe = (name, fn) => { try { fn(); } catch (e) { console.error("[" + name + "]", e); } };
+  const nb = (s) => s.replace(" ", "&nbsp;");
 
   // Preise eintragen
-  const pm = document.getElementById("price-monthly");
-  const py = document.getElementById("price-yearly");
-  const pa = document.getElementById("price-anchor");
-  if (pm) pm.innerHTML = PRICE.monthly.replace(" ", "&nbsp;");
-  if (py) py.innerHTML = PRICE.yearly.replace(" ", "&nbsp;");
-  if (pa) pa.innerHTML = "Jährlich entspricht " + PRICE.yearlyPerMonth.replace(" ", "&nbsp;") + " im Monat.";
+  const pm = $("#price-monthly"), py = $("#price-yearly"), pa = $("#price-anchor");
+  if (pm) pm.innerHTML = nb(PRICE.monthly);
+  if (py) py.innerHTML = nb(PRICE.yearly);
+  if (pa) pa.innerHTML = "Jährlich entspricht " + nb(PRICE.yearlyPerMonth) + " im Monat.";
 
-  // Countdown: nächste Akte um 05:00 UTC
-  const cd = document.getElementById("countdown");
-  if (cd) {
-    const pad = (n) => String(n).padStart(2, "0");
-    const tick = () => {
-      const now = new Date();
-      const next = new Date(Date.UTC(
-        now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 5, 0, 0));
-      if (next <= now) next.setUTCDate(next.getUTCDate() + 1);
-      let s = Math.floor((next - now) / 1000);
-      const h = Math.floor(s / 3600); s -= h * 3600;
-      const m = Math.floor(s / 60); s -= m * 60;
-      cd.textContent = pad(h) + ":" + pad(m) + ":" + pad(s);
-    };
-    tick();
-    setInterval(tick, 1000);
-  }
+  // Fragenbudget: 14 Segmente. Ruhezustand = Ende der Szene (11 übrig).
+  const segs = $("#segs");
+  for (let i = 0; i < 14; i++) segs.appendChild(document.createElement("i"));
+  const segEls = $$("i", segs);
+  const setBudget = (used) => {
+    segEls.forEach((el, n) => { el.style.opacity = n >= 14 - used ? ".2" : "1"; });
+    $("#count").textContent = (14 - used) + " Fragen übrig";
+  };
+  const setMood = (hot) => {
+    const m = $("#mood");
+    m.classList.toggle("hot", hot);
+    $("b", m).textContent = hot ? "angespannt" : "gefasst";
+  };
+  setBudget(3); setMood(true);
 
-  // Kaputte Screenshot-Bilder still ausblenden
-  document.querySelectorAll(".phone-screen img").forEach((img) => {
-    img.addEventListener("error", () => { img.style.display = "none"; });
+  // Faden im Protokoll: von der Aussage zum Fakt an der Tafel
+  const layoutVThread = () => {
+    const box = $("#proto").getBoundingClientRect();
+    const rects = $("#m1").getClientRects();
+    const a = rects[rects.length - 1], b = $("#fact").getBoundingClientRect();
+    const x1 = a.right - box.left + 6, y1 = a.top - box.top + a.height / 2;
+    // Short drop from the end of the statement onto the top edge of the fact card.
+    const fl = b.left - box.left, fr = b.right - box.left;
+    const x2 = Math.max(fl + 18, fr - 24), y2 = b.top - box.top;
+    $("#vthread").setAttribute("d", `M${x1} ${y1} C${x1 + 34} ${y1} ${x2} ${y2 - 30} ${x2} ${y2}`);
+    $("#vp1").setAttribute("cx", x1); $("#vp1").setAttribute("cy", y1);
+    $("#vp2").setAttribute("cx", x2); $("#vp2").setAttribute("cy", y2);
+  };
+
+  // Tafel: Fäden zwischen den Pins
+  const board = $("#board"), bsvg = $("svg", board);
+  const links = [["c-reiter", "c-a1"], ["c-a1", "c-fact"], ["c-a1", "c-a3"]];
+  const paths = links.map(() => {
+    const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    p.setAttribute("pathLength", "1");
+    bsvg.appendChild(p);
+    return p;
   });
+  const pin = (id) => {
+    const r = $("#" + id + " .in").getBoundingClientRect(), b = board.getBoundingClientRect();
+    return [r.left - b.left + r.width / 2, r.top - b.top + 11];
+  };
+  const layoutThreads = () => {
+    links.forEach((l, n) => {
+      const a = pin(l[0]), b = pin(l[1]);
+      const d = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2 + 14 + d * 0.07;
+      paths[n].setAttribute("d", `M${a[0]} ${a[1]} Q${mx} ${my} ${b[0]} ${b[1]}`);
+    });
+  };
 
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const hasGsap = typeof window.gsap !== "undefined" && typeof window.ScrollTrigger !== "undefined";
-
-  // Kopfzeile: beim Runterscrollen weg, beim Hochscrollen da
-  const top = document.getElementById("top");
-  let lastY = 0;
-  window.addEventListener("scroll", () => {
-    const y = window.scrollY;
-    if (top) top.classList.toggle("hidden", y > 400 && y > lastY);
-    lastY = y;
-  }, { passive: true });
-
-  // Wortmarke in Buchstaben zerlegen (für die Auflösung 70 → 35 → klar)
-  const wm = document.getElementById("wordmark");
-  let letters = [];
-  if (wm) {
-    const words = wm.textContent.split(/[\s ]+/);
-    wm.textContent = "";
-    words.forEach((word, wi) => {
-      if (wi > 0) wm.appendChild(document.createTextNode(" "));
-      const wordEl = document.createElement("span");
-      wordEl.className = "word";
-      for (const ch of word) {
-        const s = document.createElement("span");
-        s.className = "w";
-        s.textContent = ch;
-        wordEl.appendChild(s);
-        letters.push(s);
+  // Anklage
+  let solved = false;
+  $$(".sus").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (solved || btn.disabled) return;
+      const ok = btn.dataset.ok === "1", stamp = $(".stamp", btn);
+      if (ok) {
+        solved = true;
+        $$(".sus").forEach((o) => { o.disabled = true; if (o !== btn) o.classList.add("out"); });
+        $("#result").innerHTML = "<strong>Reiter ist überführt.</strong> Seine Jacke war nass, bevor der Regen kam. Im Spiel reicht das noch nicht: Für die Anklage brauchst du den entscheidenden Widerspruch, und den findest du nur mit deinen vierzehn Fragen.";
+        if (motion) {
+          A.animate(stamp, { opacity: [0, 1], scale: [2.6, 1], duration: 520, ease: "outBack(2.2)" });
+          A.animate($(".ph", btn), { scale: [1, 0.97, 1], duration: 420, delay: 160, ease: "out(3)" });
+        } else { stamp.style.opacity = 1; }
+      } else {
+        btn.disabled = true; btn.classList.add("out");
+        $("#result").innerHTML = "<strong>" + $(".name", btn).textContent + " kannst du so nicht anklagen.</strong> Auf der Tafel zeigt kein Faden auf sie. Schau noch einmal hin.";
+        if (motion) {
+          A.animate(stamp, { opacity: [0, 1], scale: [1.5, 1], duration: 320, ease: "out(4)" });
+          A.animate(btn, { x: [0, -9, 8, -5, 4, 0], duration: 420, ease: "linear" });
+        } else { stamp.style.opacity = 1; }
       }
-      wm.appendChild(wordEl);
-    });
-  }
-
-  if (reduced || !hasGsap) {
-    document.documentElement.classList.add("no-motion");
-    document.querySelectorAll(".rv").forEach((el) => el.classList.add("in"));
-    drawHeroThread(1);
-    buildPageThread(true);
-    initPhone(true);
-    return;
-  }
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  /* ---------- Held: Auftritt wie der App-Start ---------- */
-  const heroTl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-  // Buchstaben: erst zerdruckt (Grad 70), dann 35, dann klar
-  letters.forEach((s) => s.classList.add("g70"));
-  heroTl.from(letters, {
-    opacity: 0, y: 24, duration: 0.5, stagger: 0.035,
-  });
-  heroTl.add(() => {
-    letters.forEach((s, i) => {
-      gsap.delayedCall(i * 0.03, () => { s.classList.remove("g70"); s.classList.add("g35"); });
-      gsap.delayedCall(0.28 + i * 0.03, () => { s.classList.remove("g35"); });
-    });
-  }, "-=0.1");
-
-  heroTl.from(".hero .eyebrow", { opacity: 0, y: -14, duration: 0.5 }, 0);
-  heroTl.from(".hero .claim", { opacity: 0, y: 18, duration: 0.6 }, "-=0.2");
-  // Opacity only: the App Store badge must not move (Apple rule), and the former y-tween left
-  // .btn at translateY(18px) in Chrome, which misaligned it next to the badge.
-  heroTl.from(".hero-cta .btn", { opacity: 0, duration: 0.5 }, "-=0.3");
-  heroTl.from(".hero-note", { opacity: 0, duration: 0.6 }, "-=0.2");
-
-  // Zwei Karten fallen ein, Nadeln setzen sich, der Faden spannt sich
-  heroTl.from("#pcard-l", { y: -60, opacity: 0, rotation: -10, duration: 0.65, ease: "power2.out" }, "-=0.5");
-  heroTl.from("#pcard-r", { y: -60, opacity: 0, rotation: 9, duration: 0.65, ease: "power2.out" }, "-=0.45");
-  heroTl.from("#hero-pin-l", { scale: 0, duration: 0.3, ease: "back.out(3)" }, "-=0.25");
-  heroTl.from("#hero-pin-r", { scale: 0, duration: 0.3, ease: "back.out(3)" }, "-=0.15");
-  heroTl.add(() => drawHeroThread(0));
-  heroTl.to({ p: 0 }, {
-    p: 1, duration: 0.7, ease: "power2.inOut",
-    onUpdate: function () { drawHeroThread(this.targets()[0].p); },
-  });
-  heroTl.from(".scroll-hint", { opacity: 0, duration: 0.8 }, "-=0.2");
-
-  // Karten-Parallaxe zur Maus — sehr leicht
-  const heroCards = document.getElementById("hero-cards");
-  if (heroCards && window.matchMedia("(pointer: fine)").matches) {
-    window.addEventListener("mousemove", (e) => {
-      const dx = (e.clientX / window.innerWidth - 0.5);
-      const dy = (e.clientY / window.innerHeight - 0.5);
-      gsap.to("#pcard-l", { x: dx * 12, y: dy * 8, duration: 0.8, overwrite: "auto" });
-      gsap.to("#pcard-r", { x: dx * -14, y: dy * -9, duration: 0.8, overwrite: "auto" });
-      gsap.delayedCall(0.05, () => drawHeroThread(1));
-    }, { passive: true });
-  }
-
-  /* ---------- Einblendungen ---------- */
-  document.querySelectorAll(".rv").forEach((el) => {
-    gsap.to(el, {
-      opacity: 1, y: 0, duration: 0.8, ease: "power3.out",
-      scrollTrigger: { trigger: el, start: "top 86%", once: true },
-      onComplete: () => el.classList.add("in"),
     });
   });
 
-  // Aktenreiter-Karten: Stempel-Moment (kommt groß an, setzt sich)
-  gsap.utils.toArray(".tab-card").forEach((card, i) => {
-    gsap.from(card, {
-      scale: 1.06, duration: 0.5, ease: "power4.out", delay: (i % 2) * 0.08,
-      scrollTrigger: { trigger: card, start: "top 88%", once: true },
-    });
-  });
-
-  // Gründer-Preis-Stempel schlägt auf
-  const stamp = document.querySelector(".stamp");
-  if (stamp) {
-    gsap.from(stamp, {
-      scale: 2.2, opacity: 0, rotation: -6, duration: 0.45, ease: "power4.in",
-      scrollTrigger: { trigger: stamp, start: "top 85%", once: true },
-      clearProps: "scale,rotation",
-    });
-  }
-
-  // Galerie: Karten treten nacheinander auf
-  gsap.from(".case-card", {
-    opacity: 0, y: 44, duration: 0.7, ease: "power3.out", stagger: 0.09,
-    scrollTrigger: { trigger: "#gallery", start: "top 82%", once: true },
-  });
-
-  /* ---------- Klebendes iPhone ---------- */
-  initPhone(false);
-
-  /* ---------- Roter Faden über die Seite ---------- */
-  window.addEventListener("load", () => {
-    buildPageThread(false);
-    ScrollTrigger.refresh();
-  });
-  let rsz;
-  window.addEventListener("resize", () => {
-    clearTimeout(rsz);
-    rsz = setTimeout(() => buildPageThread(false), 250);
-  });
-
-  /* ================= Hilfen ================= */
-
-  function drawHeroThread(progress) {
-    const svg = document.getElementById("hero-thread");
-    const path = document.getElementById("hero-thread-path");
-    const a = document.getElementById("hero-pin-l");
-    const b = document.getElementById("hero-pin-r");
-    if (!svg || !path || !a || !b) return;
-    const box = svg.getBoundingClientRect();
-    const ra = a.getBoundingClientRect();
-    const rb = b.getBoundingClientRect();
-    const x1 = ra.left + ra.width / 2 - box.left;
-    const y1 = ra.top + ra.height / 2 - box.top;
-    const x2 = rb.left + rb.width / 2 - box.left;
-    const y2 = rb.top + rb.height / 2 - box.top;
-    const sag = 34; // der Faden hängt leicht durch
-    path.setAttribute("d",
-      "M " + x1 + " " + y1 +
-      " Q " + (x1 + x2) / 2 + " " + (Math.max(y1, y2) + sag) + " " + x2 + " " + y2);
-    const len = path.getTotalLength();
-    path.style.strokeDasharray = len;
-    path.style.strokeDashoffset = len * (1 - progress);
-  }
-
-  function buildPageThread(staticDraw) {
-    const layer = document.getElementById("thread-layer");
-    const path = document.getElementById("thread-path");
-    const page = document.getElementById("page");
-    if (!layer || !path || !page) return;
-
-    const pageRect = page.getBoundingClientRect();
-    const pageTop = pageRect.top + window.scrollY;
-    const w = page.offsetWidth;
-    const h = page.offsetHeight;
-    layer.setAttribute("width", w);
-    layer.setAttribute("height", h);
-    layer.setAttribute("viewBox", "0 0 " + w + " " + h);
-
-    // Ankerpunkte: die Vorzeilen der Abschnitte, abwechselnd versetzt
-    const anchors = [];
-    const start = document.getElementById("hero-cards");
-    if (start) {
-      const r = start.getBoundingClientRect();
-      anchors.push({ x: r.left + r.width / 2, y: r.top + window.scrollY - pageTop + r.height * 0.55 });
+  // Countdown: nächste Akte um 05:00 UTC (7 Uhr deutscher Sommerzeit)
+  const clock = $("#clock");
+  let last = "";
+  const pad = (n) => String(n).padStart(2, "0");
+  const tick = () => {
+    const now = new Date();
+    const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 5, 0, 0));
+    if (next <= now) next.setUTCDate(next.getUTCDate() + 1);
+    const s = Math.floor((next - now) / 1000);
+    const str = pad(Math.floor(s / 3600)) + ":" + pad(Math.floor(s / 60) % 60) + ":" + pad(s % 60);
+    if (!last) {
+      clock.innerHTML = str.split("").map((c) => "<span" + (c === ":" ? ' class="sep"' : "") + ">" + c + "</span>").join("");
+    } else {
+      const spans = clock.children;
+      for (let n = 0; n < str.length; n++) {
+        if (str[n] === last[n]) continue;
+        spans[n].textContent = str[n];
+        if (motion) A.animate(spans[n], { y: ["-.35em", 0], opacity: [0, 1], duration: 380, ease: "out(4)" });
+      }
     }
-    ["#spiel", "#faelle", "#drin", "#countdown-sec", "#preis", "#privatsphaere"].forEach((sel, i) => {
-      const s = document.querySelector(sel + " .eyebrow");
-      if (!s) return;
-      const r = s.getBoundingClientRect();
-      const off = (i % 2 === 0) ? -40 : 40;
-      anchors.push({
-        x: Math.min(Math.max(r.left + off, 30), w - 30),
-        y: r.top + window.scrollY - pageTop + 6,
+    last = str;
+  };
+  tick(); setInterval(tick, 1000);
+
+  const relayout = () => { layoutVThread(); layoutThreads(); };
+  relayout();
+  window.addEventListener("load", relayout);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
+
+  if (!A) return;
+
+  // Karten ziehen (auch ohne Bewegungseffekte)
+  let z = 5;
+  safe("drag", () => {
+    $$(".pc").forEach((card) => {
+      A.createDraggable(card, {
+        container: board, containerPadding: 6,
+        releaseEase: A.spring({ stiffness: 130, damping: 13 }),
+        onGrab: () => { card.style.zIndex = ++z; if (motion) A.animate($(".in", card), { scale: 1.05, duration: 180, ease: "out(3)" }); },
+        onRelease: () => { if (motion) A.animate($(".in", card), { scale: 1, duration: 420, ease: "outBack(3)" }); },
+        onUpdate: layoutThreads, onSettle: layoutThreads,
       });
     });
-    if (anchors.length < 2) return;
+  });
 
-    // Weicher Pfad durch die Anker
-    let d = "M " + anchors[0].x + " " + anchors[0].y;
-    for (let i = 1; i < anchors.length; i++) {
-      const p = anchors[i - 1];
-      const c = anchors[i];
-      const my = (p.y + c.y) / 2;
-      d += " C " + p.x + " " + my + ", " + c.x + " " + my + ", " + c.x + " " + c.y;
-    }
-    path.setAttribute("d", d);
+  let railAnim = null, resizeT;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeT);
+    resizeT = setTimeout(() => { relayout(); if (railAnim && railAnim.refresh) railAnim.refresh(); }, 120);
+  });
 
-    // Nadeln an den Ankern
-    layer.querySelectorAll("circle").forEach((n) => n.remove());
-    anchors.forEach((p) => {
-      const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      dot.setAttribute("cx", p.x); dot.setAttribute("cy", p.y); dot.setAttribute("r", 4.5);
-      dot.setAttribute("fill", "currentColor");
-      dot.style.color = "var(--pin)";
-      layer.appendChild(dot);
+  if (!motion) return;
+  document.documentElement.classList.add("motion");
+  layoutVThread();
+
+  // Roter Faden am Rand folgt dem Scrollen
+  safe("faden", () => {
+    A.animate(".faden", { scaleY: [0, 1], ease: "linear", autoplay: A.onScroll({ target: "main", enter: "top top", leave: "bottom bottom", sync: true }) });
+  });
+
+  // Held: Schrift schärft sich (70 → 35 → klar), Schwärzungen fallen, Lampe folgt dem Zeiger
+  safe("hero", () => {
+    const wm = $("#wordmark");
+    wm.innerHTML = wm.textContent.split("").map((c) => (c === " " ? " " : '<span class="ch" data-g="70" aria-hidden="true">' + c + "</span>")).join("");
+    const chars = $$(".ch", wm);
+    A.animate(chars, { opacity: [0, 1], y: [".18em", 0], duration: 700, delay: A.stagger(55, { start: 150 }), ease: "out(4)" });
+    chars.forEach((c, n) => {
+      setTimeout(() => { c.dataset.g = "35"; }, 650 + n * 75);
+      setTimeout(() => { c.dataset.g = "0"; }, 1050 + n * 75);
     });
+    const bars = $$("#tag span").map((s) => { const b = document.createElement("i"); s.appendChild(b); return b; });
+    A.utils.set(bars, { scaleX: 1 });
+    A.animate(bars, { scaleX: [1, 0], duration: 620, delay: A.stagger(260, { start: 1500 }), ease: "inOut(3)" });
+    A.animate(".hero-cta", { opacity: [0, 1], y: [14, 0], duration: 700, delay: 2500, ease: "out(3)" });
+    safe("scramble", () => { A.animate("#eyebrow", { innerHTML: A.scrambleText({ chars: "blocks" }), delay: 250 }); });
 
-    const len = path.getTotalLength();
-    path.style.strokeDasharray = len;
-    if (staticDraw) {
-      path.style.strokeDashoffset = 0;
-      return;
-    }
-    path.style.strokeDashoffset = len;
-    if (path._st) path._st.kill();
-    path._st = ScrollTrigger.create({
-      trigger: page,
-      start: "top top",
-      end: "bottom bottom",
-      scrub: 0.6,
+    const hero = $("#hero"), veil = $(".hero-veil");
+    const lamp = A.createAnimatable(veil, { x: 900, y: 900, ease: "out(3)" });
+    const rest = () => { const r = hero.getBoundingClientRect(); return [r.width * 0.2, r.height * -0.18]; };
+    veil.style.transform = "none";
+    const r0 = rest();
+    A.utils.set(veil, { x: r0[0], y: r0[1] });
+    hero.addEventListener("pointermove", (e) => {
+      if (e.pointerType === "touch") return;
+      const r = hero.getBoundingClientRect();
+      lamp.x(e.clientX - r.left - r.width / 2);
+      lamp.y(e.clientY - r.top - r.height / 2);
+    });
+    hero.addEventListener("pointerleave", () => { const p = rest(); lamp.x(p[0]); lamp.y(p[1]); });
+  });
+
+  // Verhör: die Zeitachse hängt am Scrollen
+  safe("verhoer", () => {
+    const qa = $$("#proto .qa"), fact = $("#fact"), verdict = $("#verdict");
+    const mark = $("#m1"), pins = [$("#vp1"), $("#vp2")], thread = $("#vthread");
+    A.utils.set(qa, { opacity: 0, y: 26 });
+    A.utils.set([fact, verdict], { opacity: 0, y: 18 });
+    A.utils.set(mark, { backgroundSize: "0% 2px" });
+    A.utils.set(pins, { opacity: 0 });
+    A.utils.set(thread, { strokeDashoffset: 1 });
+    setBudget(0); setMood(false);
+    const tl = A.createTimeline({
+      defaults: { ease: "out(3)", duration: 600 },
+      autoplay: A.onScroll({ target: "#verhoer", enter: "top top", leave: "bottom bottom", sync: 0.35 }),
       onUpdate: (self) => {
-        path.style.strokeDashoffset = len * (1 - self.progress);
+        const t = self.currentTime;
+        setBudget((t > 350 ? 1 : 0) + (t > 1450 ? 1 : 0) + (t > 5050 ? 1 : 0));
+        setMood(t > 5300);
       },
     });
-  }
+    tl.add(qa[0], { opacity: 1, y: 0 }, 200)
+      .add(qa[1], { opacity: 1, y: 0 }, 1300)
+      .add(fact, { opacity: 1, y: 0 }, 2500)
+      .add(mark, { backgroundSize: "100% 2px", duration: 500 }, 3100)
+      .add(pins, { opacity: 1, duration: 200 }, 3300)
+      .add(thread, { strokeDashoffset: 0, duration: 900, ease: "inOut(2)" }, 3400)
+      .add(verdict, { opacity: 1, y: 0, scale: [1.5, 1], duration: 400 }, 4200)
+      .add(qa[2], { opacity: 1, y: 0 }, 4900)
+      .add({}, { duration: 600 }, 5800);
+  });
 
-  function initPhone(staticMode) {
-    const screens = document.querySelectorAll("#phone-screen img");
-    if (!screens.length) return;
-    const setActive = (idx) => {
-      screens.forEach((img, i) => img.classList.toggle("active", i === idx));
-    };
-    if (staticMode || !hasGsap) { setActive(0); return; }
-    document.querySelectorAll("#steps .step").forEach((step) => {
-      const idx = parseInt(step.dataset.screen, 10) || 0;
-      ScrollTrigger.create({
-        trigger: step,
-        start: "top 55%",
-        end: "bottom 55%",
-        onEnter: () => setActive(idx),
-        onEnterBack: () => setActive(idx),
-      });
+  // Tafel: Karten fallen an ihren Platz, dann spannen sich die Fäden
+  safe("tafel", () => {
+    const ins = $$(".pc .in");
+    A.utils.set(paths, { strokeDashoffset: 1 });
+    A.utils.set(ins, { opacity: 0 });
+    let played = false;
+    A.onScroll({
+      target: board, enter: "bottom-=22% top",
+      onEnter: () => {
+        if (played) return;
+        played = true;
+        A.animate(ins, { opacity: [0, 1], scale: [1.25, 1], y: [-26, 0], duration: 620, delay: A.stagger(90), ease: "outBack(1.6)", onUpdate: layoutThreads });
+        A.animate(paths, { strokeDashoffset: [1, 0], duration: 800, delay: A.stagger(280, { start: 900 }), ease: "inOut(2)" });
+      },
     });
-  }
+  });
+
+  // Fälle: Scrollen schiebt den Filmstreifen
+  safe("faelle", () => {
+    const track = $("#track");
+    railAnim = A.animate(track, {
+      x: () => -(track.scrollWidth - document.documentElement.clientWidth),
+      ease: "linear",
+      autoplay: A.onScroll({ target: "#faelle", enter: "top top", leave: "bottom bottom", sync: 0.3 }),
+    });
+  });
 })();
