@@ -12,6 +12,8 @@ Spezifikation: `docs/SPEC.md`.
   der Fälle. Aussagen, Namen und Fakten stammen aus
   `Games/alibi/App/Resources/CaseFiles/case-412.json`, gekürzt.
 - `privacy.html` + `impressum.html` nutzen weiter `css/site.css` und kein Skript.
+- Uhrzeit: Die App gibt Fälle um 05:00 UTC frei. Die Seite rechnet das in deutsche
+  Zeit um (`.rel-time`, 6 Uhr im Winter, 7 Uhr im Sommer).
 - Schriften und Skripte kommen nur von dieser Domain (so steht es in der
   Datenschutzerklärung). Keine CDN-Links einbauen.
 - Ohne Skript oder mit „Bewegung reduzieren" steht die Seite vollständig im

@@ -103,7 +103,17 @@ const PRICE = {
     });
   });
 
-  // Countdown: nächste Akte um 05:00 UTC (7 Uhr deutscher Sommerzeit)
+  // Die App gibt jeden Fall um 05:00 UTC frei (publish_at in den Falldateien).
+  // In Deutschland ist das 6 Uhr im Winter und 7 Uhr im Sommer, deshalb wird
+  // die genannte Uhrzeit berechnet. HTML-Fallback in index.html: "6 Uhr".
+  safe("uhrzeit", () => {
+    const now = new Date();
+    const release = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 5, 0, 0));
+    const hour = Number(new Intl.DateTimeFormat("de-DE", { hour: "numeric", hour12: false, timeZone: "Europe/Berlin" }).format(release).replace(/\D/g, ""));
+    if (hour >= 0 && hour < 24) $$(".rel-time").forEach((el) => { el.innerHTML = hour + "&nbsp;Uhr"; });
+  });
+
+  // Countdown: nächste Akte um 05:00 UTC
   const clock = $("#clock");
   let last = "";
   const pad = (n) => String(n).padStart(2, "0");
